@@ -2164,7 +2164,7 @@ wait_deployment() {
   while true; do
     now="$(date +%s)"
     if [ "$now" -ge "$deadline" ]; then
-      echo "Timed out waiting for deployment/$name to become available in namespace $ns"
+      echo "Timed out waiting for deployment/$name or daemonset/$name to become available in namespace $ns"
       return 1
     fi
 
@@ -2175,6 +2175,13 @@ wait_deployment() {
         echo "Waiting for deployment/$name in namespace $ns"
         request_seconds="$(request_timeout_before_deadline)" || continue
         if $KUBECTL --request-timeout="$${request_seconds}s" -n "$ns" wait --for=condition=Available --timeout="$${request_seconds}s" "deployment/$name"; then
+          return 0
+        fi
+      elif $KUBECTL --request-timeout="$${request_seconds}s" -n "$ns" get "daemonset/$name" >/dev/null 2>&1; then
+        # The ingress controller may run as a DaemonSet (helm value controller.kind).
+        echo "Waiting for daemonset/$name in namespace $ns"
+        request_seconds="$(request_timeout_before_deadline)" || continue
+        if $KUBECTL --request-timeout="$${request_seconds}s" -n "$ns" rollout status --timeout="$${request_seconds}s" "daemonset/$name"; then
           return 0
         fi
       fi
