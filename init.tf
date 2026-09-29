@@ -1,5 +1,5 @@
 resource "hcloud_load_balancer" "cluster" {
-  count = local.has_external_load_balancer ? 0 : 1
+  count = local.create_ingress_load_balancer ? 1 : 0
   name  = local.load_balancer_name
 
   load_balancer_type = var.load_balancer_type
@@ -21,7 +21,7 @@ resource "hcloud_load_balancer" "cluster" {
 }
 
 resource "hcloud_load_balancer_network" "cluster" {
-  count = local.has_external_load_balancer || local.cross_network_transport_enabled ? 0 : 1
+  count = !local.create_ingress_load_balancer || local.cross_network_transport_enabled ? 0 : 1
 
   load_balancer_id = hcloud_load_balancer.cluster.*.id[0]
   # Use the last usable IP in the subnet. If control-plane LB is also enabled
@@ -50,7 +50,7 @@ resource "hcloud_load_balancer_network" "cluster" {
 }
 
 resource "hcloud_load_balancer_target" "cluster" {
-  count = local.has_external_load_balancer ? 0 : 1
+  count = local.create_ingress_load_balancer ? 1 : 0
 
   depends_on       = [hcloud_load_balancer_network.cluster]
   type             = "label_selector"
