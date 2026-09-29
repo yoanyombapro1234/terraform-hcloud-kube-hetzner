@@ -2246,9 +2246,10 @@ EOT
     var.enable_control_plane_load_balancer &&
     !local.has_external_load_balancer_base
   )
-  has_external_load_balancer = local.has_external_load_balancer_base || local.combine_load_balancers_effective
-  skip_ingress_lb_wait       = local.has_external_load_balancer_base || var.ingress_controller == "custom"
-  load_balancer_name         = "${var.cluster_name}-${var.ingress_controller}"
+  has_external_load_balancer   = local.has_external_load_balancer_base || local.combine_load_balancers_effective
+  skip_ingress_lb_wait         = local.has_external_load_balancer_base || var.ingress_controller == "custom"
+  load_balancer_name           = "${var.cluster_name}-${var.ingress_controller}"
+  create_ingress_load_balancer = !local.has_external_load_balancer && var.create_ingress_load_balancer
   managed_ingress_controllers = [
     "traefik",
     "nginx",

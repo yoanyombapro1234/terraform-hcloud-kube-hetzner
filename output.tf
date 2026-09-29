@@ -46,7 +46,7 @@ output "ingress_public_ipv4" {
   value = (
     local.combine_load_balancers_effective
     ? one(hcloud_load_balancer.control_plane[*].ipv4)
-    : (local.has_external_load_balancer ? module.control_planes[keys(module.control_planes)[0]].ipv4_address : hcloud_load_balancer.cluster[0].ipv4)
+    : (local.has_external_load_balancer ? module.control_planes[keys(module.control_planes)[0]].ipv4_address : one(hcloud_load_balancer.cluster[*].ipv4))
   )
 }
 
@@ -60,7 +60,7 @@ output "ingress_public_ipv6" {
   value = (
     local.combine_load_balancers_effective
     ? (var.load_balancer_enable_ipv6 ? one(hcloud_load_balancer.control_plane[*].ipv6) : null)
-    : (local.has_external_load_balancer ? module.control_planes[keys(module.control_planes)[0]].ipv6_address : (var.load_balancer_enable_ipv6 ? hcloud_load_balancer.cluster[0].ipv6 : null))
+    : (local.has_external_load_balancer ? module.control_planes[keys(module.control_planes)[0]].ipv6_address : (var.load_balancer_enable_ipv6 ? one(hcloud_load_balancer.cluster[*].ipv6) : null))
   )
 }
 

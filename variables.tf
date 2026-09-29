@@ -809,6 +809,12 @@ variable "load_balancer_location" {
 
 }
 
+variable "create_ingress_load_balancer" {
+  description = "Create the Terraform-managed ingress load balancer. Set to false when the ingress Service gets its own load balancer from the CCM (for example, through a custom load-balancer.hetzner.cloud/name annotation)."
+  type        = bool
+  default     = true
+}
+
 variable "load_balancer_type" {
   description = "Default load balancer server type."
   type        = string
